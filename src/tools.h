@@ -29,6 +29,10 @@ public:
   */
   MatrixXd CalculateJacobian(const VectorXd& x_state);
 
+  // added by Peter ////////////////////////
+  ///////////////////////////
+  VectorXd polarToCartesian(const VectorXd& polar);
+
 };
 
 #endif /* TOOLS_H_ */

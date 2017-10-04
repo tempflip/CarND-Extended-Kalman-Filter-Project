@@ -58,6 +58,7 @@ int main()
           string sensor_measurment = j[1]["sensor_measurement"];
           cout << "IN: " << sensor_measurment << endl;
 
+          
           MeasurementPackage meas_package;
           istringstream iss(sensor_measurment);
           long long timestamp;
@@ -91,6 +92,8 @@ int main()
           		meas_package.timestamp_ = timestamp;
           }
 
+
+          
           float x_gt;
           float y_gt;
           float vx_gt;
@@ -110,6 +113,7 @@ int main()
           //Call ProcessMeasurment(meas_package) for Kalman filter
           fusionEKF.ProcessMeasurement(meas_package);    	  
 
+
       	  //Push the current estimated x,y positon from the Kalman filter's state vector
       	  VectorXd estimate(4);
       	  double p_x = fusionEKF.ekf_.x_(0);
@@ -124,28 +128,27 @@ int main()
       	  
       	  estimations.push_back(estimate);
 
+
           // RMSE
           VectorXd RMSE = tools.CalculateRMSE(estimations, ground_truth);
-
+          
           json msgJson;
           
-          /*
           msgJson["estimate_x"] = p_x;
           msgJson["estimate_y"] = p_y;
           msgJson["rmse_x"] =  RMSE(0);
           msgJson["rmse_y"] =  RMSE(1);
           msgJson["rmse_vx"] = RMSE(2);
           msgJson["rmse_vy"] = RMSE(3);
-          */
 
           // DUMMY MSG
           ///////////////////
-          msgJson["estimate_x"] = 1;
-          msgJson["estimate_y"] = 2;
-          msgJson["rmse_x"] =  3;
-          msgJson["rmse_y"] =  4;
-          msgJson["rmse_vx"] = 5;
-          msgJson["rmse_vy"] = 6;
+          //msgJson["estimate_x"] = 1;
+          //msgJson["estimate_y"] = 2;
+          //msgJson["rmse_x"] =  888;
+          //msgJson["rmse_y"] =  888;
+          //msgJson["rmse_vx"] = 888;
+          //msgJson["rmse_vy"] = 888;
           ////////////////////
           //////////////////
 
