@@ -31,7 +31,8 @@ public:
 
   // added by Peter ////////////////////////
   ///////////////////////////
-  VectorXd polarToCartesian(const VectorXd& polar);
+  VectorXd PolarToCartesian(const VectorXd& polar);
+  VectorXd CartesianToPolar(const VectorXd& cartesian);
 
 };
 

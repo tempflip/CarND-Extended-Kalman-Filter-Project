@@ -1,6 +1,7 @@
 #include "kalman_filter.h"
 using namespace std;
 #include <iostream>
+#include "tools.h"
 
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
@@ -56,38 +57,47 @@ void KalmanFilter::Predict() {
   P_ = F_ * P_ * Ft + Q_;
 }
 
-void KalmanFilter::Update_R(const VectorXd &z) {
-  /**
-  TODO:
-    * update the state by using Kalman Filter equations
-  */
 
-}
-
-/*
-H = np.array([[1, 0, 0, 0] # X to measurement mapping matrix (H * x = measurement)
-                     ,[0, 1, 0, 0]])
-        R = np.array([[0.01, 0], 
-                     [0, 0.01]])
-        
-        Hx = H.dot(self.x)
-    
-        self.process_meas(z, H, Hx, R)
-
-*/
 void KalmanFilter::Update_L(const VectorXd &z) {
   /**
   TODO:
     * update the state by using Kalman Filter equations
   */
   z_ = z;
+  R_ = Rl_;
+
   H_ = MatrixXd(2, 4);
   H_ << 1, 0, 0, 0,
         0, 1, 0, 0;
   Hx_ = H_ * x_;
-  R_ = Rl_;
   UpdateEKF();
 }
+
+
+/*
+        z = np.array(measurement).reshape((3,-1)) # z - measurement matrix
+        H = get_jacobian_from_state(polar_to_cartesian(measurement))
+        R =  np.array([[0.01, 0, 0], 
+                     [0, 1.0e-6, 0], 
+                     [0, 0, 0.01]])
+        
+        Hx = cartesian_to_polar(self.x).reshape(3,1)
+*/
+void KalmanFilter::Update_R(const VectorXd &z) {
+
+  Tools tools;
+  z_ = z;
+  R_ = Rr_;
+  H_ = tools.CalculateJacobian(tools.PolarToCartesian(z));
+  Hx_ = tools.CartesianToPolar(x_);
+  
+  VectorXd xxxx = tools.CartesianToPolar(tools.PolarToCartesian(z));
+  cout << "##########" << z << " ||||||||||||||| " << xxxx << endl;
+  //UpdateEKF();
+
+}
+
+
 
 /*
  def process_meas(self, z, H, Hx, R):
@@ -114,7 +124,6 @@ void KalmanFilter::UpdateEKF() {
   ////////////////
   x_ = x_ + K * y;
   P_ = (I_ - K * H_) * P_;
-  cout << "##### UpdateEKF" << S << endl;
 }
 
 

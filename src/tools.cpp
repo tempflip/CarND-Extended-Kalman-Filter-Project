@@ -28,11 +28,47 @@ VectorXd Tools::CalculateRMSE(const vector<VectorXd> &estimations,
   return RMSE;
 }
 
+
+
+/*
+def get_jacobian_from_state(cartesian_x_):
+    cartesian_x = cartesian_x_.flatten()
+    px, py, vx, vy = cartesian_x[0], cartesian_x[1], cartesian_x[2], cartesian_x[3]
+    
+    
+    px2_plus_py2 = px**2 + py**2
+    on_sqrt = math.sqrt(px2_plus_py2)
+    on_3_per_2 = math.pow(px2_plus_py2, 3/2)
+    
+    vi1 = py * (vx*py - vy*px) / on_3_per_2
+    vi2 = px * (vy*px - vx*py) / on_3_per_2
+    
+    Hj = np.array([[px / on_sqrt,        py / on_sqrt,      0,             0]
+                  ,[-py / px2_plus_py2,  px / px2_plus_py2, 0,             0]
+                  ,[vi1,                 vi2,               px / on_sqrt,  py / on_sqrt ]
+                  ])
+    return Hj
+*/
 MatrixXd Tools::CalculateJacobian(const VectorXd& x_state) {
-  /**
-  TODO:
-    * Calculate a Jacobian here.
-  */
+  MatrixXd Hj = MatrixXd(3,4);
+
+  float px = x_state(0);
+  float py = x_state(1);
+  float vx = x_state(2);
+  float vy = x_state(3);
+
+  float px2_plus_py2 = px*px + py*py;
+  float on_sqrt = sqrt(px2_plus_py2);
+  float on_3_per_2 = pow(px2_plus_py2, 3/2);
+
+  float vi1 = py * (vx*py - vy*px) / on_3_per_2;
+  float vi2 = px * (vy*px - vx*py) / on_3_per_2;
+
+  Hj << px / on_sqrt,        py / on_sqrt,      0,             0,
+        -py / px2_plus_py2,  px / px2_plus_py2, 0,             0,
+        vi1,                 vi2,               px / on_sqrt,  py / on_sqrt;
+
+  return Hj;
 }
 
 
@@ -47,8 +83,7 @@ def polar_to_cartesian(polar_x):
     
     return np.array([px, py, vx, vy])
 */
-VectorXd Tools::polarToCartesian(const VectorXd& polar) {
-
+VectorXd Tools::PolarToCartesian(const VectorXd& polar) {
 	VectorXd cartesian = VectorXd(4);
 
 	float rho = polar(0);
@@ -62,5 +97,37 @@ VectorXd Tools::polarToCartesian(const VectorXd& polar) {
 
 	cartesian << px, py, vx, vy;
 	return cartesian;
+}
 
+/*
+def cartesian_to_polar(cartesian_x_):
+    THRESH = 0.0001;
+    cartesian_x = cartesian_x_.flatten()
+    px, py, vx, vy = cartesian_x[0], cartesian_x[1], cartesian_x[2], cartesian_x[3]
+    rho = math.sqrt(px**2 + py**2)
+    phi = math.atan2(py, px)
+    drho = 0
+    if rho > THRESH: drho = (px*vx + py*vy) / rho
+    
+    return np.array([rho, phi, drho])
+*/
+
+
+VectorXd Tools::CartesianToPolar(const VectorXd& cartesian) {
+  VectorXd polar = VectorXd(3);
+  float THRESH = 0.0001;
+  float px = cartesian(0);
+  float py = cartesian(1);
+  float vx = cartesian(2);
+  float vy = cartesian(3);
+
+  float rho = sqrt(px*px + py*py);
+  float phi = atan2(py, px);
+  float drho = 0;
+  if (rho > THRESH) {
+    drho = (px*vx + py*vy) / rho;
+  }
+
+  polar << rho, phi, drho;
+  return polar;
 }

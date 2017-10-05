@@ -94,7 +94,7 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
       */
       VectorXd polar = VectorXd(3);
       polar << measurement_pack.raw_measurements_(0), measurement_pack.raw_measurements_(1), measurement_pack.raw_measurements_(2);
-      VectorXd cartesian = tools.polarToCartesian(polar);
+      VectorXd cartesian = tools.PolarToCartesian(polar);
 
       ekf_.x_ = cartesian;
     }
