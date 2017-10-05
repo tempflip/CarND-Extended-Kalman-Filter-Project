@@ -67,6 +67,8 @@ public:
   void UpdateQ(float dt);
 
   void UpdateF(float dt);
+
+  void InitF();
 };
 
 #endif /* KALMAN_FILTER_H_ */

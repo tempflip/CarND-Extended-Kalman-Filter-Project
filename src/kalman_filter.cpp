@@ -17,6 +17,16 @@ void KalmanFilter::Init(VectorXd &x_in, MatrixXd &P_in, MatrixXd &F_in,
   H_ = H_in;
   R_ = R_in;
   Q_ = Q_in;
+
+}
+
+void KalmanFilter::InitF() {
+  F_ = MatrixXd(4,4);
+  F_ << 1, 0, 1, 0,
+        0, 1, 0, 1,
+        0, 0, 1, 0,
+        0, 0, 0, 1;
+
 }
 
 void KalmanFilter::Predict() {
@@ -40,30 +50,6 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
   */
 }
 
-/* PYTHON
-
-        dt2 = dt * dt
-        dt3 = dt * dt2
-        dt4 = dt * dt3
-
-        x, y = 5,5
-
-        r11 = dt4 * x / 4
-        r13 = dt3 * x / 2
-        r22 = dt4 * y / 4
-        r24 = dt3 * y /  2
-        r31 = dt3 * x / 2 
-        r33 = dt2 * x
-        r42 = dt3 * y / 2
-        r44 = dt2 * y
-
-        self.Q = np.array([[r11, 0, r13, 0],
-                      [0, r22, 0, r24],
-                      [r31, 0, r33, 0], 
-                      [0, r42, 0, r44]])   
-
-
-*/
 void KalmanFilter::UpdateQ(float dt) {
         float dt2 = dt * dt;
         float dt3 = dt * dt2;
@@ -102,7 +88,13 @@ void KalmanFilter::UpdateQ(float dt) {
         Q_(3, 2) = 0;
         Q_(3, 3) = r33;
         
-        cout << "updateQ" << Q_ << " >>>> <<<<" << endl;
-
+        //cout << "updateQ" << Q_ << " >>>> <<<<" << endl;
 
 }
+
+void KalmanFilter::UpdateF(float dt) {
+  F_(0, 2) = dt;
+  F_(1, 3) = dt;
+  cout << ":: F" << F_ << endl;
+}
+

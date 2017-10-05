@@ -37,6 +37,8 @@ FusionEKF::FusionEKF() {
     * Set the process and measurement noises
   */
 
+  ekf_.InitF();
+
 
 }
 
@@ -125,6 +127,7 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
   cout << dt << endl;
 
   ekf_.UpdateQ(dt);
+  ekf_.UpdateF(dt);
   ekf_.Predict();
 
   /*****************************************************************************
