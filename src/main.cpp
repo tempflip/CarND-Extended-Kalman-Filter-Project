@@ -56,7 +56,7 @@ int main()
           
 
           string sensor_measurment = j[1]["sensor_measurement"];
-          cout << "IN: " << sensor_measurment << endl;
+          //cout << "IN: " << sensor_measurment << endl;
 
           
           MeasurementPackage meas_package;
@@ -153,7 +153,7 @@ int main()
           //////////////////
 
           auto msg = "42[\"estimate_marker\"," + msgJson.dump() + "]";
-          std::cout << "OUT: " << msg << std::endl;
+          //std::cout << "OUT: " << msg << std::endl;
           ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
         } // if 'telemetry' event end
       } else {

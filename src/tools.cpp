@@ -18,8 +18,6 @@ VectorXd Tools::CalculateRMSE(const vector<VectorXd> &estimations,
 
   
   for (int i = 0; i < estimations.size(); ++i) {
-  	cout << ">>>>>>>>>>>>>>> " << estimations[i] << " || " << ground_truth[i] << endl;
-
   	VectorXd diff = estimations[i] - ground_truth[i];
   	diff = diff.array() * diff.array();
   	diff = diff.array().sqrt();
