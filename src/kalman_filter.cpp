@@ -9,46 +9,114 @@ KalmanFilter::KalmanFilter() {}
 
 KalmanFilter::~KalmanFilter() {}
 
-void KalmanFilter::Init(VectorXd &x_in, MatrixXd &P_in, MatrixXd &F_in,
-                        MatrixXd &H_in, MatrixXd &R_in, MatrixXd &Q_in) {
-  x_ = x_in;
-  P_ = P_in;
-  F_ = F_in;
-  H_ = H_in;
-  R_ = R_in;
-  Q_ = Q_in;
+void KalmanFilter::Init() {
+  P_ = MatrixXd(4,4);
+  P_ << 1, 0, 1, 0,
+        0, 1, 0, 1,
+        0, 0, 1000, 0,
+        0, 0, 0, 1000;
 
-}
-
-void KalmanFilter::InitF() {
   F_ = MatrixXd(4,4);
   F_ << 1, 0, 1, 0,
         0, 1, 0, 1,
         0, 0, 1, 0,
         0, 0, 0, 1;
 
+  Rl_ = MatrixXd(2,2);
+  Rl_ << 0.01, 0,
+        0, 0.01;
+
+  Rr_ = MatrixXd(3,3);
+  Rr_ << 0.01, 0, 0,
+        0, 1.0e-6, 0,
+        0, 0, 0.01;
+
+  I_ = MatrixXd(4,4);
+  I_ << 1, 0, 0, 0,
+        0, 1, 0, 0, 
+        0, 0, 1, 0,
+        0, 0, 0, 1;
+
 }
 
+
+/*
+PYTHON
+self.x = np.dot(self.F, self.x) #+ self.u # new state : movement matrix X current state + movement
+        self.P = np.dot(np.dot(self.F, self.P), self.F.transpose()) + self.Q # adjusting covar matrix
+*/
 void KalmanFilter::Predict() {
   /**
   TODO:
     * predict the state
   */
+  cout << "## Predict " << endl;
+  x_ = F_ * x_;
+  MatrixXd Ft = F_.transpose();
+  P_ = F_ * P_ * Ft + Q_;
 }
 
-void KalmanFilter::Update(const VectorXd &z) {
+void KalmanFilter::Update_R(const VectorXd &z) {
   /**
   TODO:
     * update the state by using Kalman Filter equations
   */
+
 }
 
-void KalmanFilter::UpdateEKF(const VectorXd &z) {
+/*
+H = np.array([[1, 0, 0, 0] # X to measurement mapping matrix (H * x = measurement)
+                     ,[0, 1, 0, 0]])
+        R = np.array([[0.01, 0], 
+                     [0, 0.01]])
+        
+        Hx = H.dot(self.x)
+    
+        self.process_meas(z, H, Hx, R)
+
+*/
+void KalmanFilter::Update_L(const VectorXd &z) {
+  /**
+  TODO:
+    * update the state by using Kalman Filter equations
+  */
+  z_ = z;
+  H_ = MatrixXd(2, 4);
+  H_ << 1, 0, 0, 0,
+        0, 1, 0, 0;
+  Hx_ = H_ * x_;
+  R_ = Rl_;
+  UpdateEKF();
+}
+
+/*
+ def process_meas(self, z, H, Hx, R):
+
+        y = z - Hx # error : previous state - measurement X measurement matrix
+        S = H.dot(self.P).dot(H.transpose()) + R
+        K = self.P.dot(H.transpose()).dot(np.linalg.inv(S)) # kalman gain
+        self.x = self.x + K.dot(y) # new state : x + kalman gain X error
+        self.P = np.dot((self.I - K.dot(H)), self.P) # + self.Q # adjusting uncertainty covaria       
+*/
+void KalmanFilter::UpdateEKF() {
   /**
   TODO:
     * update the state by using Extended Kalman Filter equations
   */
+  MatrixXd y = z_ - Hx_;
+
+  MatrixXd Ht = H_.transpose();
+  MatrixXd S = H_ * P_ * Ht + R_;
+  MatrixXd Si = S.inverse();
+  MatrixXd K = P_ * Ht * Si;
+
+  // update
+  ////////////////
+  x_ = x_ + K * y;
+  P_ = (I_ - K * H_) * P_;
+  cout << "##### UpdateEKF" << S << endl;
 }
+
 
 void KalmanFilter::UpdateQ(float dt) {
         float dt2 = dt * dt;
