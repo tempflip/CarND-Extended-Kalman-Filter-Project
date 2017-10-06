@@ -41,17 +41,7 @@ void KalmanFilter::Init() {
 }
 
 
-/*
-PYTHON
-self.x = np.dot(self.F, self.x) #+ self.u # new state : movement matrix X current state + movement
-        self.P = np.dot(np.dot(self.F, self.P), self.F.transpose()) + self.Q # adjusting covar matrix
-*/
 void KalmanFilter::Predict() {
-  /**
-  TODO:
-    * predict the state
-  */
-  cout << "## Predict " << endl;
   x_ = F_ * x_;
   MatrixXd Ft = F_.transpose();
   P_ = F_ * P_ * Ft + Q_;
@@ -59,10 +49,6 @@ void KalmanFilter::Predict() {
 
 
 void KalmanFilter::Update_L(const VectorXd &z) {
-  /**
-  TODO:
-    * update the state by using Kalman Filter equations
-  */
   z_ = z;
   R_ = Rl_;
 
@@ -74,15 +60,6 @@ void KalmanFilter::Update_L(const VectorXd &z) {
 }
 
 
-/*
-        z = np.array(measurement).reshape((3,-1)) # z - measurement matrix
-        H = get_jacobian_from_state(polar_to_cartesian(measurement))
-        R =  np.array([[0.01, 0, 0], 
-                     [0, 1.0e-6, 0], 
-                     [0, 0, 0.01]])
-        
-        Hx = cartesian_to_polar(self.x).reshape(3,1)
-*/
 void KalmanFilter::Update_R(const VectorXd &z) {
 
   Tools tools;
@@ -90,35 +67,17 @@ void KalmanFilter::Update_R(const VectorXd &z) {
   R_ = Rr_;
   H_ = tools.CalculateJacobian(tools.PolarToCartesian(z));
   Hx_ = tools.CartesianToPolar(x_);
-  
-  VectorXd xxxx = tools.CartesianToPolar(tools.PolarToCartesian(z));
-  cout << "##########" << z << " ||||||||||||||| " << xxxx << endl;
-  //UpdateEKF();
-
+  UpdateEKF();
 }
 
-
-
-/*
- def process_meas(self, z, H, Hx, R):
-
-        y = z - Hx # error : previous state - measurement X measurement matrix
-        S = H.dot(self.P).dot(H.transpose()) + R
-        K = self.P.dot(H.transpose()).dot(np.linalg.inv(S)) # kalman gain
-        self.x = self.x + K.dot(y) # new state : x + kalman gain X error
-        self.P = np.dot((self.I - K.dot(H)), self.P) # + self.Q # adjusting uncertainty covaria       
-*/
 void KalmanFilter::UpdateEKF() {
-  /**
-  TODO:
-    * update the state by using Extended Kalman Filter equations
-  */
   MatrixXd y = z_ - Hx_;
-
-  MatrixXd Ht = H_.transpose();
-  MatrixXd S = H_ * P_ * Ht + R_;
+  MatrixXd PHt = P_ * H_.transpose();
+  MatrixXd S = H_ * PHt + R_;
   MatrixXd Si = S.inverse();
-  MatrixXd K = P_ * Ht * Si;
+  MatrixXd K = PHt * Si;
+
+  if (y.size() == 3) y(1) = atan2(sin(y(1)), cos(y(1)));
 
   // update
   ////////////////
@@ -164,14 +123,10 @@ void KalmanFilter::UpdateQ(float dt) {
         Q_(3, 1) = r31;
         Q_(3, 2) = 0;
         Q_(3, 3) = r33;
-        
-        //cout << "updateQ" << Q_ << " >>>> <<<<" << endl;
-
 }
 
 void KalmanFilter::UpdateF(float dt) {
   F_(0, 2) = dt;
   F_(1, 3) = dt;
-  cout << ":: F" << F_ << endl;
 }
 
