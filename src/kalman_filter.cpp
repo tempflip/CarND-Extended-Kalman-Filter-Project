@@ -24,13 +24,13 @@ void KalmanFilter::Init() {
         0, 0, 0, 1;
 
   Rl_ = MatrixXd(2,2);
-  Rl_ << 0.01, 0,
-        0, 0.01;
+  Rl_ << 0.0225, 0,
+        0, 0.0225;
 
   Rr_ = MatrixXd(3,3);
-  Rr_ << 0.01, 0, 0,
-        0, 1.0e-6, 0,
-        0, 0, 0.01;
+  Rr_ << 0.09, 0, 0,
+        0, 0.0009, 0,
+        0, 0, 0.09;
 
   I_ = MatrixXd(4,4);
   I_ << 1, 0, 0, 0,
@@ -43,14 +43,14 @@ void KalmanFilter::Init() {
 
 void KalmanFilter::Predict() {
 
-  std::cout << "## Before Q: \n" << Q_ << std::endl;
-  std::cout << "## Before F: \n" << F_ << std::endl;
-  std::cout << "## Before P: \n" << P_ << std::endl;
+  //std::cout << "## Before Q: \n" << Q_ << std::endl;
+  //std::cout << "## Before F: \n" << F_ << std::endl;
+  //std::cout << "## Before P: \n" << P_ << std::endl;
 
   x_ = F_ * x_;
   P_ = F_ * P_ * F_.transpose() + Q_;
   std::cout << "## PREDICTED P: \n" << P_ << std::endl;
-  std::cout << "## PREDICTED x: \n" << x_(0) << ", " << x_(1) << std::endl;
+  std::cout << "## PREDICTED x: \n" << x_ << std::endl;
 
 }
 
@@ -81,7 +81,9 @@ void KalmanFilter::UpdateEKF() {
 
   std::cout << "## UPDATE z: " << z_ << std::endl;
   std::cout << "## UPDATE H: " << H_ << std::endl;
+  std::cout << "## UPDATE Hx_: " << Hx_ << std::endl;
   std::cout << "## UPDATE P: " << P_ << std::endl;
+  std::cout << "## UPDATE R_: " << R_ << std::endl;
 
   MatrixXd y = z_ - Hx_;
   MatrixXd PHt = P_ * H_.transpose();
@@ -95,8 +97,9 @@ void KalmanFilter::UpdateEKF() {
   ////////////////
   x_ = x_ + K * y;
   P_ = (I_ - K * H_) * P_;
-
-  std::cout << "## UPDATED x: \n" << x_(0) << ", " << x_(1) << std::endl;
+  
+  std::cout << "!! UPDATED P: " << P_ << std::endl;
+  std::cout << "!! UPDATED x: \n" << x_ << std::endl;
 
 }
 
