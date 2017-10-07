@@ -51,20 +51,22 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
     ekf_.x_ = VectorXd(4);
 
     if (measurement_pack.sensor_type_ == MeasurementPackage::RADAR) {
+      cout << "## init a RADER" << endl;
       VectorXd polar = VectorXd(3);
       polar << measurement_pack.raw_measurements_(0), measurement_pack.raw_measurements_(1), measurement_pack.raw_measurements_(2);
       VectorXd cartesian = tools.PolarToCartesian(polar);
       ekf_.x_ = cartesian;
     }
     else if (measurement_pack.sensor_type_ == MeasurementPackage::LASER) {
-      ekf_.x_ << measurement_pack.raw_measurements_(0), measurement_pack.raw_measurements_(1) ,9,9;
+      cout << "## init a LIDAR" << endl;
+      ekf_.x_ << measurement_pack.raw_measurements_(0), measurement_pack.raw_measurements_(1) ,0,0;
     }
 
     is_initialized_ = true;
     return;
   }
 
-  float dt = (measurement_pack.timestamp_ - previous_timestamp_) /100000.;
+  float dt = (measurement_pack.timestamp_ - previous_timestamp_) /1000000.;
   previous_timestamp_ = measurement_pack.timestamp_;
 
   ekf_.UpdateQ(dt);

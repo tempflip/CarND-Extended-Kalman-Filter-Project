@@ -141,16 +141,22 @@ int main()
           msgJson["rmse_vx"] = RMSE(2);
           msgJson["rmse_vy"] = RMSE(3);
 
-          // DUMMY MSG
-          ///////////////////
-          //msgJson["estimate_x"] = 1;
-          //msgJson["estimate_y"] = 2;
-          //msgJson["rmse_x"] =  888;
-          //msgJson["rmse_y"] =  888;
-          //msgJson["rmse_vx"] = 888;
-          //msgJson["rmse_vy"] = 888;
-          ////////////////////
-          //////////////////
+
+
+          
+          cout << x_gt << "\t";
+          cout << y_gt << "\t";
+          cout << vx_gt << "\t";
+          cout << vy_gt << "\t";
+
+          cout << "|||\t";
+
+          cout << p_x << "\t";
+          cout << p_y << "\t";
+          cout << v1 << "\t";
+          cout << v2 << "\t";
+        
+          cout << endl;
 
           auto msg = "42[\"estimate_marker\"," + msgJson.dump() + "]";
           //std::cout << "OUT: " << msg << std::endl;

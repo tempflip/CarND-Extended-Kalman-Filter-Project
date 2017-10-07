@@ -12,8 +12,8 @@ KalmanFilter::~KalmanFilter() {}
 
 void KalmanFilter::Init() {
   P_ = MatrixXd(4,4);
-  P_ << 1, 0, 1, 0,
-        0, 1, 0, 1,
+  P_ << 1, 0, 0, 0,
+        0, 1, 0, 0,
         0, 0, 1000, 0,
         0, 0, 0, 1000;
 
@@ -42,9 +42,16 @@ void KalmanFilter::Init() {
 
 
 void KalmanFilter::Predict() {
+
+  std::cout << "## Before Q: \n" << Q_ << std::endl;
+  std::cout << "## Before F: \n" << F_ << std::endl;
+  std::cout << "## Before P: \n" << P_ << std::endl;
+
   x_ = F_ * x_;
-  MatrixXd Ft = F_.transpose();
-  P_ = F_ * P_ * Ft + Q_;
+  P_ = F_ * P_ * F_.transpose() + Q_;
+  std::cout << "## PREDICTED P: \n" << P_ << std::endl;
+  std::cout << "## PREDICTED x: \n" << x_(0) << ", " << x_(1) << std::endl;
+
 }
 
 
@@ -71,6 +78,11 @@ void KalmanFilter::Update_R(const VectorXd &z) {
 }
 
 void KalmanFilter::UpdateEKF() {
+
+  std::cout << "## UPDATE z: " << z_ << std::endl;
+  std::cout << "## UPDATE H: " << H_ << std::endl;
+  std::cout << "## UPDATE P: " << P_ << std::endl;
+
   MatrixXd y = z_ - Hx_;
   MatrixXd PHt = P_ * H_.transpose();
   MatrixXd S = H_ * PHt + R_;
@@ -83,6 +95,9 @@ void KalmanFilter::UpdateEKF() {
   ////////////////
   x_ = x_ + K * y;
   P_ = (I_ - K * H_) * P_;
+
+  std::cout << "## UPDATED x: \n" << x_(0) << ", " << x_(1) << std::endl;
+
 }
 
 
@@ -94,35 +109,23 @@ void KalmanFilter::UpdateQ(float dt) {
         float noise_ax = 9;
         float noise_ay = 9;
 
-        float r00 = dt4 * noise_ax / 4;
-        float r02 = dt3 * noise_ax / 2;
-        float r11 = dt4 * noise_ay / 4;
-        float r13 = dt3 * noise_ay /  2;
-        float r20 = dt3 * noise_ax / 2;
-        float r22 = dt2 * noise_ax;
-        float r31 = dt3 * noise_ay / 2;
-        float r33 = dt2 * noise_ay;
+        float r11 = dt4 * noise_ax / 4;
+        float r13 = dt3 * noise_ax / 2;
+        float r22 = dt4 * noise_ay / 4;
+        float r24 = dt3 * noise_ay / 2;
+        float r31 = dt3 * noise_ax / 2;
+        float r33 = dt2 * noise_ax;
+        float r42 = dt3 * noise_ay / 2;
+        float r44 = dt2 * noise_ay;
 
         Q_ = MatrixXd(4,4);
-        Q_(0, 0) = r00;
-        Q_(0, 1) = 0;
-        Q_(0, 2) = r02;
-        Q_(0, 3) = 0;
+        
+        Q_ <<      r11, 0, r13, 0,
+                   0, r22, 0, r24,
+                   r31, 0, r33, 0,
+                   0, r42, 0, r44;
 
-        Q_(1, 0) = 0;
-        Q_(1, 1) = r11;
-        Q_(1, 2) = 0;
-        Q_(1, 3) = r13;
 
-        Q_(2, 0) = r20;
-        Q_(2, 1) = 0;
-        Q_(2, 2) = r22;
-        Q_(2, 3) = 0;        
-
-        Q_(3, 0) = 0;
-        Q_(3, 1) = r31;
-        Q_(3, 2) = 0;
-        Q_(3, 3) = r33;
 }
 
 void KalmanFilter::UpdateF(float dt) {
