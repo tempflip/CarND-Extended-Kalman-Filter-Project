@@ -49,8 +49,8 @@ void KalmanFilter::Predict() {
 
   x_ = F_ * x_;
   P_ = F_ * P_ * F_.transpose() + Q_;
-  std::cout << "## PREDICTED P: \n" << P_ << std::endl;
-  std::cout << "## PREDICTED x: \n" << x_ << std::endl;
+  //std::cout << "## PREDICTED P: \n" << P_ << std::endl;
+  //std::cout << "## PREDICTED x: \n" << x_ << std::endl;
 
 }
 
@@ -79,11 +79,11 @@ void KalmanFilter::Update_R(const VectorXd &z) {
 
 void KalmanFilter::UpdateEKF() {
 
-  std::cout << "## UPDATE z: " << z_ << std::endl;
-  std::cout << "## UPDATE H: " << H_ << std::endl;
-  std::cout << "## UPDATE Hx_: " << Hx_ << std::endl;
-  std::cout << "## UPDATE P: " << P_ << std::endl;
-  std::cout << "## UPDATE R_: " << R_ << std::endl;
+  //std::cout << "## UPDATE z: " << z_ << std::endl;
+  //std::cout << "## UPDATE H: " << H_ << std::endl;
+  //std::cout << "## UPDATE Hx_: " << Hx_ << std::endl;
+  //std::cout << "## UPDATE P: " << P_ << std::endl;
+  //std::cout << "## UPDATE R_: " << R_ << std::endl;
 
   MatrixXd y = z_ - Hx_;
   MatrixXd PHt = P_ * H_.transpose();
