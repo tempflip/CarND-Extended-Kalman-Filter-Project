@@ -28,8 +28,6 @@ std::string hasData(std::string s) {
 
 int main()
 {
-  cout << "Hello we are starting!!!!" << endl;
-
   uWS::Hub h;
 
   // Create a Kalman Filter instance
@@ -56,8 +54,6 @@ int main()
           
 
           string sensor_measurment = j[1]["sensor_measurement"];
-          //cout << "IN: " << sensor_measurment << endl;
-
           
           MeasurementPackage meas_package;
           istringstream iss(sensor_measurment);
@@ -141,9 +137,7 @@ int main()
           msgJson["rmse_vx"] = RMSE(2);
           msgJson["rmse_vy"] = RMSE(3);
 
-
-
-          
+          /*          
           cout << x_gt << "\t";
           cout << y_gt << "\t";
           cout << vx_gt << "\t";
@@ -157,9 +151,9 @@ int main()
           cout << v2 << "\t";
         
           cout << endl;
+          */
 
           auto msg = "42[\"estimate_marker\"," + msgJson.dump() + "]";
-          //std::cout << "OUT: " << msg << std::endl;
           ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
         } // if 'telemetry' event end
       } else {

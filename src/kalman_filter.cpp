@@ -98,8 +98,8 @@ void KalmanFilter::UpdateEKF() {
   x_ = x_ + K * y;
   P_ = (I_ - K * H_) * P_;
   
-  std::cout << "!! UPDATED P: " << P_ << std::endl;
-  std::cout << "!! UPDATED x: \n" << x_ << std::endl;
+  //std::cout << "!! UPDATED P: " << P_ << std::endl;
+  //std::cout << "!! UPDATED x: \n" << x_ << std::endl;
 
 }
 
