@@ -1,3 +1,6 @@
+## [Please see my post about this project](https://medium.com/@tempflip/udacity-self-driving-cars-extended-kalman-filters-my-bits-99cbbaf65e3d)
+
+
 # Extended Kalman Filter Project Starter Code
 Self-Driving Car Engineer Nanodegree Program
 
